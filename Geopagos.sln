@@ -1,0 +1,93 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{294AB94C-5921-489C-8185-97D1440ADECD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authorizations", "Authorizations", "{868EC4CF-068B-4178-9C6B-0C5582878CAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Authorization.Application", "GeoPagos.Authorization.Application\GeoPagos.Authorization.Application.csproj", "{2596C6B3-8872-4EBB-BBA4-89617FC4A822}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Authorization.Infraestructure", "GeoPagos.Authorization.Infraestructure\GeoPagos.Authorization.Infraestructure.csproj", "{5062B854-861B-48B2-A8E3-13BF6DD841F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Authorization.Domain", "GeoPagos.Authorization.Domain\GeoPagos.Authorization.Domain.csproj", "{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Authorization.Api", "GeoPagos.Authorization.Api\GeoPagos.Authorization.Api.csproj", "{496B15CA-C0E9-4784-84C4-6BF53D1D11CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaymentProcessor", "PaymentProcessor", "{71BC716B-713F-43A8-9DB8-4919E9E6E402}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.PaymentProcessor.Domain", "GeoPagos.PaymentProcessor.Domain\GeoPagos.PaymentProcessor.Domain.csproj", "{777B2BB0-2E0D-449F-A169-3B4645CBC448}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.PaymentProcessor.Application", "GeoPagos.PaymentProcessor.Application\GeoPagos.PaymentProcessor.Application.csproj", "{ECAD57B8-9C78-4D6B-8740-63E783010625}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.PaymentProcessor.Infraestructure", "GeoPagos.PaymentProcessor.Infraestructure\GeoPagos.PaymentProcessor.Infraestructure.csproj", "{F99E0012-4DCD-45B4-8A5D-4B65D957CD63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.PaymentProcessor.Api", "GeoPagos.PaymentProcessor.Api\GeoPagos.PaymentProcessor.Api.csproj", "{232B126E-DAD1-4254-9023-DD3A9D7D09E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateways", "Gateways", "{B47B5ED2-889A-4095-AAE0-82DE1CBA2D83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Gateway.App", "GeoPagos.Gateway.App\GeoPagos.Gateway.App.csproj", "{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{45B0A697-4846-4FAB-9D5E-1D73C18F8D3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2596C6B3-8872-4EBB-BBA4-89617FC4A822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2596C6B3-8872-4EBB-BBA4-89617FC4A822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2596C6B3-8872-4EBB-BBA4-89617FC4A822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2596C6B3-8872-4EBB-BBA4-89617FC4A822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5062B854-861B-48B2-A8E3-13BF6DD841F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5062B854-861B-48B2-A8E3-13BF6DD841F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5062B854-861B-48B2-A8E3-13BF6DD841F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5062B854-861B-48B2-A8E3-13BF6DD841F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496B15CA-C0E9-4784-84C4-6BF53D1D11CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496B15CA-C0E9-4784-84C4-6BF53D1D11CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496B15CA-C0E9-4784-84C4-6BF53D1D11CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496B15CA-C0E9-4784-84C4-6BF53D1D11CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{777B2BB0-2E0D-449F-A169-3B4645CBC448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{777B2BB0-2E0D-449F-A169-3B4645CBC448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{777B2BB0-2E0D-449F-A169-3B4645CBC448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{777B2BB0-2E0D-449F-A169-3B4645CBC448}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECAD57B8-9C78-4D6B-8740-63E783010625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECAD57B8-9C78-4D6B-8740-63E783010625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECAD57B8-9C78-4D6B-8740-63E783010625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECAD57B8-9C78-4D6B-8740-63E783010625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{232B126E-DAD1-4254-9023-DD3A9D7D09E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{232B126E-DAD1-4254-9023-DD3A9D7D09E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{232B126E-DAD1-4254-9023-DD3A9D7D09E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{232B126E-DAD1-4254-9023-DD3A9D7D09E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{868EC4CF-068B-4178-9C6B-0C5582878CAD} = {294AB94C-5921-489C-8185-97D1440ADECD}
+		{2596C6B3-8872-4EBB-BBA4-89617FC4A822} = {868EC4CF-068B-4178-9C6B-0C5582878CAD}
+		{5062B854-861B-48B2-A8E3-13BF6DD841F7} = {868EC4CF-068B-4178-9C6B-0C5582878CAD}
+		{2BA26E4F-BFB0-4A60-BE2A-3D78EE8E774E} = {868EC4CF-068B-4178-9C6B-0C5582878CAD}
+		{496B15CA-C0E9-4784-84C4-6BF53D1D11CB} = {868EC4CF-068B-4178-9C6B-0C5582878CAD}
+		{71BC716B-713F-43A8-9DB8-4919E9E6E402} = {294AB94C-5921-489C-8185-97D1440ADECD}
+		{777B2BB0-2E0D-449F-A169-3B4645CBC448} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
+		{ECAD57B8-9C78-4D6B-8740-63E783010625} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
+		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
+		{232B126E-DAD1-4254-9023-DD3A9D7D09E0} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
+		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD} = {B47B5ED2-889A-4095-AAE0-82DE1CBA2D83}
+	EndGlobalSection
+EndGlobal
