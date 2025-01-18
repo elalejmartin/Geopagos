@@ -67,11 +67,16 @@
       - geopagos-network 
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: elasticsearch
     environment:
       - discovery.type=single-node  # Para usar Elasticsearch en un solo nodo
-      - ELASTIC_PASSWORD=admin  # Contraseña para el usuario "elastic"
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+      - ELASTIC_PASSWORD=kibana_password  # Contraseña para el usuario "elastic"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"  # Puerto HTTP para interactuar con Elasticsearch
       - "9300:9300"  # Puerto para la comunicación interna entre nodos
@@ -79,14 +84,16 @@
       - geopagos-network 
 
   kibana:
-     image: docker.elastic.co/kibana/kibana:8.7.0
+     image: docker.elastic.co/kibana/kibana:8.17.0
      container_name: kibana
      environment:
         - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-        - ELASTICSEARCH_USERNAME=admin
-        - ELASTICSEARCH_PASSWORD=admin
+        - ELASTICSEARCH_USERNAME=kibana_user
+        - ELASTICSEARCH_PASSWORD=kibana_password     
      ports:
         - "5601:5601"  # Puerto de Kibana para acceder a la interfaz web
+     volumes:
+      - sql_data:/var/opt/mssql  # Mapea el volumen persistente a la ruta donde SQL Server guarda los datos
      networks:
       - geopagos-network 
      depends_on:
@@ -94,13 +101,13 @@
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver
-    hostname: sqlserver
+    container_name: sqlserver 
     environment:
+      - NAME=AuthorizationDb
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=root
+      - MSSQL_SA_PASSWORD=MyP@ssw0rd2025
     ports:
-      - "1434:1434"
+      - "1434:1433"
     networks:
       - geopagos-network 
     restart: always 
@@ -110,6 +117,9 @@
 
 volumes:
   consul-data:
+  es_data:
+    driver: local
+  sql_data:
 
 networks:
   geopagos-network:  

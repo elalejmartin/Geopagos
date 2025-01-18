@@ -22,9 +22,12 @@ namespace GeoPagos.Authorization.Infraestructure
             // Configuración específica para AuthorizationRequest
             modelBuilder.Entity<AuthorizationRequest>(entity =>
             {
+                entity.ToTable("AuthorizationRequest");
                 entity.HasKey(e => e.Id); // Clave primaria
 
                 entity.Property(e => e.TransactionId);
+                entity.Property(e => e.CustomerName);
+                entity.Property(e => e.CustomerType);
 
                 entity.Property(e => e.Amount)
                       .HasPrecision(18, 2); // Precisión para decimales

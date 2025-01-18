@@ -14,6 +14,12 @@ namespace GeoPagos.Authorization.Api.Controllers
         {
             _logger = logger;
             _authorizationRequestService = authorizationRequestService;
-        }   
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok("Hello World");
+        }
     }
 }
