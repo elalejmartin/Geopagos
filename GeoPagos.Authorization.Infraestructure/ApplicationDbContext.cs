@@ -28,6 +28,7 @@ namespace GeoPagos.Authorization.Infraestructure
                 entity.Property(e => e.TransactionId);
                 entity.Property(e => e.CustomerName);
                 entity.Property(e => e.CustomerType);
+                entity.Property(e => e.TransactionType);
 
                 entity.Property(e => e.Amount)
                       .HasPrecision(18, 2); // Precisión para decimales

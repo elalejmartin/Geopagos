@@ -6,6 +6,11 @@ services:
     build:
       context: .
       dockerfile: GeoPagos.Gateway.App/Dockerfile
+    ports:
+      - "8001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
     networks:
       - geopagos-network
 
@@ -13,6 +18,11 @@ services:
     image: ${DOCKER_REGISTRY-}geopagosauthorizationapi
     container_name: services-authorization
     hostname: services-authorization
+    ports:
+      - "8002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
     build:
       context: .
       dockerfile: GeoPagos.Authorization.Api/Dockerfile
@@ -27,6 +37,11 @@ services:
     build:
       context: .
       dockerfile: GeoPagos.PaymentProcessor.Api/Dockerfile
+    ports:
+      - "8003:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
     networks:
       - geopagos-network
 

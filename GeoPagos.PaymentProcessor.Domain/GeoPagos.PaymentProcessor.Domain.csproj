@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GeoPagos.PaymentProcessor.Application\GeoPagos.PaymentProcessor.Application.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -23,12 +23,12 @@ namespace GeoPagos.Authorization.Api.Controllers
             try
             {
                 var implementation = _authorizationRequestFactory.GetAuthorizationRequest(model.CustomerType);
-                await implementation.Authorize(model);
-                return Ok("Hello World");
+                var response = await implementation.Authorize(model);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                throw;
+                return NotFound(ex.Message);
             }
 
         }

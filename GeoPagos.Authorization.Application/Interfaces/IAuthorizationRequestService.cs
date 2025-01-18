@@ -9,6 +9,6 @@ namespace GeoPagos.Authorization.Application.Interfaces
 {
     public interface IAuthorizationRequestService
     {
-        Task Authorize(AuthorizationRequestDto entity);
+        Task<AuthorizationRequestResponseDto> Authorize(AuthorizationRequestDto model);
     }
 }

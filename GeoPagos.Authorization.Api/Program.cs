@@ -32,10 +32,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IAuthorizationRequestFactory, AuthorizationRequestFactory>();
-builder.Services.AddSingleton<IAuthorizationRequestService, AuthorizationRequestPrimeroService>();
-builder.Services.AddSingleton<IAuthorizationRequestService, AuthorizationRequestSegundoService>();
-builder.Services.AddSingleton<IAuthorizationRequestRepository, AuthorizationRequestRepository>();
+//builder.Services.AddSingleton<Func<IServiceProvider, ApplicationDbContext>>(sp =>
+//{
+//    return (serviceProvider) =>
+//    {
+//        var scope = serviceProvider.CreateScope();  // Crear un nuevo scope
+//        return scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    };
+//});
+
+builder.Services.AddScoped<IAuthorizationRequestFactory, AuthorizationRequestFactory>();
+builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestPrimeroService>();
+builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestSegundoService>();
+builder.Services.AddScoped<IAuthorizationRequestRepository, AuthorizationRequestRepository>();
+builder.Services.AddScoped<AuthorizationRequestPrimeroService>();
+builder.Services.AddScoped<AuthorizationRequestSegundoService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,6 +54,32 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Configurar Consul
+var consulClient = new ConsulClient(config =>
+{
+    config.Address = new Uri("http://services-consul:8500"); // Dirección de Consul
+});
+
+// Configurar el registro del servicio
+var registration = new AgentServiceRegistration
+{
+    ID = "authorization-service-1",  // ID único para esta instancia del servicio
+    Name = "Authorization-Service",  // Nombre del servicio
+    Address = "localhost",    // Dirección del servicio
+    Port = 50162               // Puerto donde corre el servicio
+};
+
+// Registrar el servicio en Consul
+await consulClient.Agent.ServiceRegister(registration);
+// Registrar el servicio en Consul
+//consulClient.Agent.ServiceRegister(registration).Wait();
+
+// Manejador para anular el registro cuando el servicio se apaga
+app.Lifetime.ApplicationStopping.Register(async () =>
+{
+    await consulClient.Agent.ServiceDeregister(registration.ID);
+});
 
 
 
@@ -69,13 +106,6 @@ if (app.Environment.IsDevelopment())
 
 //    }
 //}
-
-
-
-
-
-
-
 
 app.UseHttpsRedirection();
 

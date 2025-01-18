@@ -1,5 +1,6 @@
 ﻿using GeoPagos.Authorization.Domain.Entities;
 using GeoPagos.Authorization.Domain.IRepositories;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +12,30 @@ namespace GeoPagos.Authorization.Infraestructure.Repositories
 
     public class AuthorizationRequestRepository : IAuthorizationRequestRepository
     {
-        private readonly ApplicationDbContext _applicationDbContext;
-        public AuthorizationRequestRepository(ApplicationDbContext applicationDbContext)
+        //private readonly IServiceProvider _serviceProvider;
+        private readonly ApplicationDbContext _context;
+        public AuthorizationRequestRepository(
+           // IServiceProvider serviceProvider
+            ApplicationDbContext applicationDbContext
+            )
         {
-            _applicationDbContext = applicationDbContext;
+            _context = applicationDbContext;
+            //_serviceProvider = serviceProvider;
         }
 
         public async Task Save(AuthorizationRequest entity)
         {
+            //var _context = _serviceProvider.GetService<ApplicationDbContext>();
             if (entity.Id == Guid.Empty)
             {
-                _applicationDbContext.AuthorizationRequest.Add(entity);
+                _context.AuthorizationRequest.Add(entity);
 
             }
             else
             {
-                _applicationDbContext.AuthorizationRequest.Update(entity);
+                _context.AuthorizationRequest.Update(entity);
             }
-            await _applicationDbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

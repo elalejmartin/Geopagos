@@ -16,5 +16,6 @@ namespace GeoPagos.Authorization.Application.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerType { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public string TransactionType { get; set; }
     }
 }

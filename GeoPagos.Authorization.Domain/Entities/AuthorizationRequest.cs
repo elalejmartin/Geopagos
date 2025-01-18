@@ -16,6 +16,7 @@ namespace GeoPagos.Authorization.Domain.Entities
         public string? CustomerName { get; set; }
         public string? CustomerType { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public string TransactionType { get; set; } 
 
         public void Approve()
         {

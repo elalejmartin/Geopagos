@@ -9,62 +9,11 @@ using System.Diagnostics.Tracing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de OpenTelemetry
-//builder.Services.AddOpenTelemetry()
-//    .WithTracing(tracerProviderBuilder =>
-//    {
-//        tracerProviderBuilder
-//            .AddAspNetCoreInstrumentation()  // Instrumentar ASP.NET Core
-//            .AddHttpClientInstrumentation() // Instrumentar HttpClient
-//            .AddJaegerExporter(options =>
-//            {
-//                options.AgentHost = "services-jaeger"; // Dirección del agente Jaeger
-//                options.AgentPort = 14268;        // Puerto del agente Jaeger
-//                //options.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
-//                //options.ExportProcessorType = ExportProcessorType.Batch; // Exportación por lotes
-//            })
-//            .SetResourceBuilder(
-//                ResourceBuilder.CreateDefault()
-//                    .AddService("Gateway") // Nombre del servicio
-//            );
-//    });
-
 // Cargar el archivo `ocelot.json` explícitamente
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
 // Configura Ocelot con la configuración leída desde `ocelot.json`
 builder.Services.AddOcelot(builder.Configuration);
-
-// Configura Swagger para Ocelot
-builder.Services.AddSwaggerForOcelot(builder.Configuration)
-    .AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Title = "API Gateway con Ocelot",
-            Version = "v1"
-        });
-    });
-
-
-// Configurar OpenTelemetry con Jaeger
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .SetResourceBuilder(
-                ResourceBuilder.CreateDefault()
-                    .AddService("MyDotNetApp")) // Nombre del servicio en Jaeger
-            .AddAspNetCoreInstrumentation() // Trazado automático de ASP.NET Core
-            .AddHttpClientInstrumentation() // Trazado automático de HttpClient
-            .AddJaegerExporter(options =>
-            {
-                options.AgentHost = "services-jaeger"; // Dirección del agente Jaeger
-                options.AgentPort = 6831;        // Puerto del agente Jaeger
-            });
-    });
-
-
 
 // Add services to the container.
 
@@ -72,10 +21,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton(TracerProvider.Default);
-
-
 
 
 
