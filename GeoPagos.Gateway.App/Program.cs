@@ -1,11 +1,66 @@
 using Consul;
-using Yarp.ReverseProxy.Configuration;
+using Microsoft.OpenApi.Models;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using System.Diagnostics.Tracing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios de YARP
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+// Configuración de OpenTelemetry
+//builder.Services.AddOpenTelemetry()
+//    .WithTracing(tracerProviderBuilder =>
+//    {
+//        tracerProviderBuilder
+//            .AddAspNetCoreInstrumentation()  // Instrumentar ASP.NET Core
+//            .AddHttpClientInstrumentation() // Instrumentar HttpClient
+//            .AddJaegerExporter(options =>
+//            {
+//                options.AgentHost = "services-jaeger"; // Dirección del agente Jaeger
+//                options.AgentPort = 14268;        // Puerto del agente Jaeger
+//                //options.Protocol = OpenTelemetry.Exporter.JaegerExportProtocol.UdpCompactThrift;
+//                //options.ExportProcessorType = ExportProcessorType.Batch; // Exportación por lotes
+//            })
+//            .SetResourceBuilder(
+//                ResourceBuilder.CreateDefault()
+//                    .AddService("Gateway") // Nombre del servicio
+//            );
+//    });
+
+builder.Services.AddOcelot();
+
+// Configura Swagger para Ocelot
+builder.Services.AddSwaggerForOcelot(builder.Configuration)
+    .AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "API Gateway con Ocelot",
+            Version = "v1"
+        });
+    });
+
+
+// Configurar OpenTelemetry con Jaeger
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+    {
+        tracerProviderBuilder
+            .SetResourceBuilder(
+                ResourceBuilder.CreateDefault()
+                    .AddService("MyDotNetApp")) // Nombre del servicio en Jaeger
+            .AddAspNetCoreInstrumentation() // Trazado automático de ASP.NET Core
+            .AddHttpClientInstrumentation() // Trazado automático de HttpClient
+            .AddJaegerExporter(options =>
+            {
+                options.AgentHost = "services-jaeger"; // Dirección del agente Jaeger
+                options.AgentPort = 6831;        // Puerto del agente Jaeger
+            });
+    });
+
+
 
 // Add services to the container.
 
@@ -14,8 +69,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton(TracerProvider.Default);
+
+
+
+
+
 var app = builder.Build();
-app.MapReverseProxy();
+
 
 
 // Configurar Consul
@@ -56,5 +117,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseOcelot();
 
 app.Run();

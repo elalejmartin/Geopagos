@@ -1,0 +1,32 @@
+﻿{
+  "ReRoutes": [
+    {
+      "UpstreamPathTemplate": "/api/authorization/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPort": "services-authorization:80", // Cambiar al nombre del contenedor y puerto
+      "ServiceName": "authorization-service",
+      "UpstreamHost": "localhost",
+      "DownstreamHost": "services-authorization", // Aquí se debe usar el nombre del contenedor en la red Docker
+      "DownstreamPort": 80 // Cambia al puerto adecuado si tu contenedor expone otro puerto
+    },
+    {
+      "UpstreamPathTemplate": "/api/payment-processor/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPort": "payment-processor-service:80",
+      "ServiceName": "payment-processor-service",
+      "UpstreamHost": "localhost",
+      "DownstreamHost": "payment-processor-service",
+      "DownstreamPort": 80
+    }
+  ],
+  "GlobalConfiguration": {
+    "UseServiceDiscovery": true,
+    "ServiceDiscoveryProvider": {
+      "Host": "services-consul",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
+}

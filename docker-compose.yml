@@ -43,7 +43,8 @@
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: services-rabbitmq
+    hostname: services-rabbitmq
     ports:
       - "5672:5672" # Puerto para comunicación con aplicaciones (AMQP)
       - "15672:15672" # Puerto para la interfaz web de administración
@@ -53,15 +54,43 @@
     networks:
       - geopagos-network
 
-  zipkin:
-    image: openzipkin/zipkin
-    container_name: zipkin
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: services-jaeger
+    hostname: services-jaeger
     ports:
-      - "9411:9411" # Puerto para la interfaz web de Zipkin
-    depends_on:
-      - rabbitmq
+      - "16686:16686" # UI de Jaeger
+      - "6831:6831/udp" # Puerto del agente
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     networks:
       - geopagos-network 
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node  # Para usar Elasticsearch en un solo nodo
+      - ELASTIC_PASSWORD=admin  # Contraseña para el usuario "elastic"
+    ports:
+      - "9200:9200"  # Puerto HTTP para interactuar con Elasticsearch
+      - "9300:9300"  # Puerto para la comunicación interna entre nodos
+    networks:
+      - geopagos-network 
+
+  kibana:
+     image: docker.elastic.co/kibana/kibana:8.7.0
+     container_name: kibana
+     environment:
+        - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+        - ELASTICSEARCH_USERNAME=admin
+        - ELASTICSEARCH_PASSWORD=admin
+     ports:
+        - "5601:5601"  # Puerto de Kibana para acceder a la interfaz web
+     networks:
+      - geopagos-network 
+     depends_on:
+        - elasticsearch
 
 
 
