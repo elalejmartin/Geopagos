@@ -29,7 +29,11 @@ var builder = WebApplication.CreateBuilder(args);
 //            );
 //    });
 
-builder.Services.AddOcelot();
+// Cargar el archivo `ocelot.json` explícitamente
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+
+// Configura Ocelot con la configuración leída desde `ocelot.json`
+builder.Services.AddOcelot(builder.Configuration);
 
 // Configura Swagger para Ocelot
 builder.Services.AddSwaggerForOcelot(builder.Configuration)

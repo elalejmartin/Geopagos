@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="ValueObjects\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GeoPagos.Authorization.Application\GeoPagos.Authorization.Application.csproj" />
+  </ItemGroup>
+
 </Project>
