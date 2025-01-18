@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Gateway.App", "Geo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{45B0A697-4846-4FAB-9D5E-1D73C18F8D3E}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{55851832-1E2B-495B-BBD5-B99437E74153}"
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,10 +75,10 @@ Global
 		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{55851832-1E2B-495B-BBD5-B99437E74153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{55851832-1E2B-495B-BBD5-B99437E74153}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{55851832-1E2B-495B-BBD5-B99437E74153}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{55851832-1E2B-495B-BBD5-B99437E74153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

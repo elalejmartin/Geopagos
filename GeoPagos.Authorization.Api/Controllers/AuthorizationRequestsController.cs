@@ -1,4 +1,5 @@
-﻿using GeoPagos.Authorization.Application.Interfaces;
+﻿using GeoPagos.Authorization.Application.DTOs;
+using GeoPagos.Authorization.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +10,27 @@ namespace GeoPagos.Authorization.Api.Controllers
     public class AuthorizationRequestsController : ControllerBase
     {
         private readonly ILogger<AuthorizationRequestsController> _logger;
-        private readonly IAuthorizationRequestService _authorizationRequestService;
-        public AuthorizationRequestsController(ILogger<AuthorizationRequestsController> logger, IAuthorizationRequestService authorizationRequestService)
+        private readonly IAuthorizationRequestFactory _authorizationRequestFactory;
+        public AuthorizationRequestsController(ILogger<AuthorizationRequestsController> logger, IAuthorizationRequestFactory authorizationRequestFactory)
         {
             _logger = logger;
-            _authorizationRequestService = authorizationRequestService;
+            _authorizationRequestFactory = authorizationRequestFactory;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost]
+        public async Task<IActionResult> Post(AuthorizationRequestDto model)
         {
-            return Ok("Hello World");
+            try
+            {
+                var implementation = _authorizationRequestFactory.GetAuthorizationRequest(model.CustomerType);
+                await implementation.Authorize(model);
+                return Ok("Hello World");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }

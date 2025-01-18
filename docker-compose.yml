@@ -1,4 +1,4 @@
-﻿services:
+services:
   geopagos.gateway.app:
     image: ${DOCKER_REGISTRY-}geopagosgatewayapp
     container_name: services-gateway
@@ -31,7 +31,7 @@
       - geopagos-network
 
   consul:
-    image: consul:1.15.0  # Usar una versión específica
+    image: consul:1.15.0  # Usar una version especifica
     container_name: services-consul 
     hostname: services-consul
     ports:
@@ -46,25 +46,13 @@
     container_name: services-rabbitmq
     hostname: services-rabbitmq
     ports:
-      - "5672:5672" # Puerto para comunicación con aplicaciones (AMQP)
-      - "15672:15672" # Puerto para la interfaz web de administración
+      - "5672:5672" # Puerto para comunicacion con aplicaciones (AMQP)
+      - "15672:15672" # Puerto para la interfaz web 
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
     networks:
       - geopagos-network
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: services-jaeger
-    hostname: services-jaeger
-    ports:
-      - "16686:16686" # UI de Jaeger
-      - "6831:6831/udp" # Puerto del agente
-    environment:
-      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
-    networks:
-      - geopagos-network 
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
@@ -74,12 +62,12 @@
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.authc.api_key.enabled=true
-      - ELASTIC_PASSWORD=kibana_password  # Contraseña para el usuario "elastic"
+      - ELASTIC_PASSWORD=kibana_password  # Pass para el usuario "elastic"
     volumes:
       - es_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"  # Puerto HTTP para interactuar con Elasticsearch
-      - "9300:9300"  # Puerto para la comunicación interna entre nodos
+      - "9300:9300"  # Puerto para la comunicacion interna entre nodos
     networks:
       - geopagos-network 
 

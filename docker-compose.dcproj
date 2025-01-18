@@ -4,10 +4,10 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
-    <ProjectGuid>55851832-1e2b-495b-bbd5-b99437e74153</ProjectGuid>
+    <ProjectGuid>f28b4c93-1305-4236-9d4d-62c90bfc5ccb</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>geopagos.gateway.app</DockerServiceName>
+    <DockerServiceName>geopagos.paymentprocessor.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

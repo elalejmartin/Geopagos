@@ -13,6 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["GeoPagos.Authorization.Api/GeoPagos.Authorization.Api.csproj", "GeoPagos.Authorization.Api/"]
+COPY ["GeoPagos.Authorization.Application/GeoPagos.Authorization.Application.csproj", "GeoPagos.Authorization.Application/"]
+COPY ["GeoPagos.Authorization.Infraestructure/GeoPagos.Authorization.Infraestructure.csproj", "GeoPagos.Authorization.Infraestructure/"]
+COPY ["GeoPagos.Authorization.Domain/GeoPagos.Authorization.Domain.csproj", "GeoPagos.Authorization.Domain/"]
 RUN dotnet restore "./GeoPagos.Authorization.Api/GeoPagos.Authorization.Api.csproj"
 COPY . .
 WORKDIR "/src/GeoPagos.Authorization.Api"
