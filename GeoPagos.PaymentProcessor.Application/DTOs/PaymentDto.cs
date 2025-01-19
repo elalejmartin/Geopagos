@@ -10,7 +10,7 @@ namespace GeoPagos.PaymentProcessor.Application.DTOs
     {
         public decimal? Amount { get; set; }
         public string? TransactionId { get; set; }
-        public string? CustomerId { get; set; }  
+        public string? CustomerName { get; set; }  
         public string? Response { get; set; }    
     }
 }

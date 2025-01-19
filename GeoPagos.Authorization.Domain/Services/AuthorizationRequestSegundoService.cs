@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Transactions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GeoPagos.Authorization.Domain.Services
@@ -35,7 +36,7 @@ namespace GeoPagos.Authorization.Domain.Services
             var verify = await VerifyAmountPayment(model);
             if (verify.Response == "Approved")
             {
-                if (model.TransactionType != "Confirmation") 
+                if (model.TransactionType != "Confirmacion") //cuadno es cobro, devolución o reversa
                 {
                     result.Message = "Payment pending";
                     var authorizationRequest = new AuthorizationRequest
@@ -66,8 +67,10 @@ namespace GeoPagos.Authorization.Domain.Services
                         TransactionType = model.TransactionType
                     };
 
-                    //Enviar a la cola de mensajes  rabbitmq
+                 
                 }
+
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
 
                 //Guardar en la base de datos
                 //
@@ -89,17 +92,20 @@ namespace GeoPagos.Authorization.Domain.Services
             var data  = new PaymentDto()
             {
                 Amount = model.Amount,
-                CustomerId = model.CustomerName
+                CustomerName = model.CustomerName,
+                TransactionId = model.TransactionId                
             };
 
             try
             {
                 // URL del servicio al que quieres hacer la solicitud POST
-                string url = "https://api.example.com/endpoint";  // Cambia por tu URL real
+                string url = "http://services-payment-processor/api/payments/";  // Cambia por tu URL real
 
 
-                // Serializa el objeto a JSON
-                string jsonContent = "";// JsonConverter Json.JsonConvert.SerializeObject(data);
+                string jsonContent = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                {
+                    WriteIndented = true // Formato con sangría para mayor legibilidad
+                });
 
                 // Crea el contenido HTTP (cuerpo de la solicitud)
                 StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");

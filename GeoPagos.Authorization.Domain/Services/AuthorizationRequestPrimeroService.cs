@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GeoPagos.Authorization.Domain.Services
@@ -16,6 +18,7 @@ namespace GeoPagos.Authorization.Domain.Services
         private readonly IAuthorizationRequestRepository _authorizationRequestRepository;
         private readonly ILogger<AuthorizationRequestPrimeroService> _logger;
         private readonly HttpClient _client;
+
         public AuthorizationRequestPrimeroService(IAuthorizationRequestRepository authorizationRequestRepository
             , ILogger<AuthorizationRequestPrimeroService> logger)
         {
@@ -49,11 +52,11 @@ namespace GeoPagos.Authorization.Domain.Services
                 //Guardar en la base de datos
                 //
 
-                //Enviar a la cola de mensajes  rabbitmq
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
             }
             else
             {
-                result.Message = "Payment rejected";
+                result.Message = $"Payment rejected: {verify.Error}";
             }
 
             return result;
@@ -61,22 +64,26 @@ namespace GeoPagos.Authorization.Domain.Services
 
         private async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
         {
-
+            //var discovery = await GetServiceAddress("Payment-Processor-Service");
             // Crea el objeto JSON que deseas enviar en el cuerpo de la solicitud
-            var data = new PaymentDto()
+            var data  = new PaymentDto()
             {
                 Amount = model.Amount,
-                CustomerId = model.CustomerName
+                CustomerName = model.CustomerName,
+                TransactionId = model.TransactionId                
             };
 
             try
             {
                 // URL del servicio al que quieres hacer la solicitud POST
-                string url = "https://api.example.com/endpoint";  // Cambia por tu URL real
+                string url = $"http://services-payment-processor/api/payments/";  // Cambia por tu URL real
 
 
-                // Serializa el objeto a JSON
-                string jsonContent = "";// JsonConverter Json.JsonConvert.SerializeObject(data);
+                string jsonContent = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                {
+                    WriteIndented = true // Formato con sangría para mayor legibilidad
+                });
+
 
                 // Crea el contenido HTTP (cuerpo de la solicitud)
                 StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -102,5 +109,20 @@ namespace GeoPagos.Authorization.Domain.Services
             }
             return data;
         }
+
+        private async Task<string?> GetServiceAddress(string serviceName)
+        {
+            var response = await _client.GetAsync($"http://services-consul:8500/v1/catalog/service/{serviceName}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var services = JsonSerializer.Deserialize<List<ConsulServiceDto>>(json);
+                return $"{services?.FirstOrDefault()?.ServiceAddress}:{services?.FirstOrDefault()?.ServicePort}";
+            }
+
+            return null;
+        }
+
     }
 }
