@@ -7,6 +7,7 @@ using GeoPagos.Authorization.Application.Interfaces;
 using GeoPagos.Authorization.Domain.Services;
 using GeoPagos.Authorization.Domain.IRepositories;
 using GeoPagos.Authorization.Infraestructure.Repositories;
+using GeoPagos.Authorization.Api.IntegrationEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestSeg
 builder.Services.AddScoped<IAuthorizationRequestRepository, AuthorizationRequestRepository>();
 builder.Services.AddScoped<AuthorizationRequestPrimeroService>();
 builder.Services.AddScoped<AuthorizationRequestSegundoService>();
+builder.Services.AddHostedService<AuthorizationRequestConsumer>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

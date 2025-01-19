@@ -32,7 +32,7 @@ namespace GeoPagos.Authorization.Domain.Services
             {
                 "1" => _serviceProvider.GetRequiredService<AuthorizationRequestPrimeroService>(),
                 "2" => _serviceProvider.GetRequiredService<AuthorizationRequestSegundoService>(),
-                _ => throw new ArgumentException($"Customer Type: {tipo}"),
+                _ => throw new ArgumentException($"Customer Type: {tipo}-Solo se admite 1 o 2"),
             };
         }
     }

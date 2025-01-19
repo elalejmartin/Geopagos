@@ -1,9 +1,11 @@
 ﻿using GeoPagos.Authorization.Application.DTOs;
 using GeoPagos.Authorization.Domain.Entities;
 using GeoPagos.Authorization.Domain.IRepositories;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -14,10 +16,16 @@ namespace GeoPagos.Authorization.Domain.Services
     {
         private readonly HttpClient _client;
         private readonly IAuthorizationRequestRepository _authorizationRequestRepository;
+        private readonly ConnectionFactory _factory;
         public AuthorizacionRequestBase(IAuthorizationRequestRepository authorizationRequestRepository)
         {
             _client = new HttpClient();
-            _authorizationRequestRepository = authorizationRequestRepository;   
+            _factory = new ConnectionFactory()
+                                    { HostName = "services-rabbitmq",
+                                        UserName= "user",
+                                        Password = "password"
+                                    };
+             _authorizationRequestRepository = authorizationRequestRepository;
         }
 
         public virtual async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
@@ -68,7 +76,28 @@ namespace GeoPagos.Authorization.Domain.Services
             return data;
         }
 
-       
+        public async Task SendMessage(string queueName, string message)
+        {
+            using var connection = await _factory.CreateConnectionAsync();
+            IChannel channel = await connection.CreateChannelAsync();
+            await channel.QueueDeclareAsync(queueName, durable:false, exclusive:false,autoDelete:false, arguments: null);
+
+            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(message);
+            var props = new BasicProperties();
+            props.ContentType = "text/plain";
+            props.DeliveryMode =DeliveryModes.Transient;
+            await channel.BasicPublishAsync(exchange:"", routingKey: queueName, mandatory: false, basicProperties: props, body: messageBodyBytes);
+
+
+            //Exchanges: Son los puntos de entrada para los mensajes en RabbitMQ. Los mensajes se enrutan a las colas basadas en las reglas de enrutamiento.
+            //Bindings: Conectan exchanges y colas, definiendo cómo se enrutan los mensajes.
+            //Routing keys: Se utilizan para enrutar mensajes a colas específicas.
+            //Durable queues: Las colas durables persisten incluso si el servidor se reinicia.
+            //ACK: El mecanismo de confirmación(ACK) garantiza que los mensajes se procesen solo una vez.
+            //Dead letter exchanges: Se utilizan para manejar mensajes que no pueden ser procesados.
+            //MassTransit: Una biblioteca de alto nivel que simplifica la integración con RabbitMQ en .NET.
+
+        }
 
     }
 }

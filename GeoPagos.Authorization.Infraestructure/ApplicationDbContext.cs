@@ -38,6 +38,17 @@ namespace GeoPagos.Authorization.Infraestructure
                 entity.Property(e => e.Status);
             });
 
+            modelBuilder.Entity<AuthorizationRequestApproved>(entity =>
+            {
+                entity.ToTable("AuthorizationRequestApproved");
+                entity.HasKey(e => e.Id); // Clave primaria
+
+                entity.Property(e => e.TransactionId);
+                entity.Property(e => e.CustomerName);
+                entity.Property(e => e.Amount)
+                      .HasPrecision(18, 2); // Precisión para decimales
+            });
+
             // Configuraciones adicionales (si aplica)
         }    
     }

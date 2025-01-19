@@ -35,54 +35,58 @@ namespace GeoPagos.Authorization.Domain.Services
 
             var verify = await VerifyAmountPayment(model);
 
-            if (verify.Response == "Approved")
+  
+            switch (model.TransactionType)
             {
-                switch (model.TransactionType)
-                {
-                    case "Cobro":
-                        result = await TransactionTypeCobro(model);
-                        break;
-                    case "Devolucion":
-                        result = await TransactionTypeDevolucion(model);
-                        break;
-                    case "Reversa":
-                        result = await TransactionTypeReversa(model);
-                        break;
-                    case "Confirmacion":
-                        result = await TransactionTypeConfirmacion(model);
-                        break;
-                    default:
-                        break;
-                }
+                case "Cobro":
+                    result = await TransactionTypeCobro(model, verify.Response);
+                    break;
+                case "Devolucion":
+                    result = await TransactionTypeDevolucion(model, verify.Response);
+                    break;
+                case "Reversa":
+                    result = await TransactionTypeReversa(model, verify.Response);
+                    break;
+                case "Confirmacion":
+                    result = await TransactionTypeConfirmacion(model, verify.Response);
+                    break;
+                default:
+                    result.Message = $"Invalid TransactionType: {model.TransactionType} - Solo se admite Cobro,Devolucion,Reversa,Confirmacion para customerType:2";
+                    break;
+            }
 
-            }
-            else
-            {
-                result.Message = $"Payment rejected: {verify.Error}";
-            }
+
 
 
             return result;  
         }
 
 
-        public async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment pending";
+
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Pending",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
                 TransactionType = model.TransactionType
             };
+
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            if (exist != null)
+            {
+                result.Message = "Payment rejected: TransactionId already exists";
+                return result;
+            }
 
             //Guardar auth en base de datos
             await _authorizationRequestRepository.Save(authorizationRequest);
@@ -92,18 +96,19 @@ namespace GeoPagos.Authorization.Domain.Services
             return result;
         }
 
-        public async Task<AuthorizationRequestResponseDto> TransactionTypeDevolucion(AuthorizationRequestDto model)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeDevolucion(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment pending";
+
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Pending",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
@@ -116,18 +121,18 @@ namespace GeoPagos.Authorization.Domain.Services
             return result;
         }
 
-        public async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment pending";
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Pending",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
@@ -140,7 +145,7 @@ namespace GeoPagos.Authorization.Domain.Services
             return result;
         }
 
-        public async Task<AuthorizationRequestResponseDto> TransactionTypeConfirmacion(AuthorizationRequestDto model)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeConfirmacion(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
@@ -158,14 +163,14 @@ namespace GeoPagos.Authorization.Domain.Services
                 return result;  
             }
 
-            result.Message = "Payment approved";
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Approved",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
@@ -174,6 +179,20 @@ namespace GeoPagos.Authorization.Domain.Services
 
             //Guardar auth en base de datos
             await _authorizationRequestRepository.Save(authorizationRequest);
+
+            if (statusProcessPayment == "Approved")
+            {
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+                var approved = new AuthorizationRequestApproved()
+                {
+                    Id = Guid.Empty,
+                    Amount = authorizationRequest.Amount,
+                    TransactionDate = authorizationRequest.TransactionDate,
+                    CustomerName = authorizationRequest.CustomerName,
+                    TransactionId = authorizationRequest.TransactionId,
+                };
+                await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+            }
 
             return result;
         }

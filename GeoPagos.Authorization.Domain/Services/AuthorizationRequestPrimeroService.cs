@@ -20,10 +20,10 @@ namespace GeoPagos.Authorization.Domain.Services
         private readonly HttpClient _client;
 
         public AuthorizationRequestPrimeroService(IAuthorizationRequestRepository authorizationRequestRepository
-            , ILogger<AuthorizationRequestPrimeroService> logger) : base(authorizationRequestRepository)    
+            , ILogger<AuthorizationRequestPrimeroService> logger) : base(authorizationRequestRepository)
         {
             _authorizationRequestRepository = authorizationRequestRepository;
-            _logger = logger;   
+            _logger = logger;
             _client = new HttpClient();
         }
 
@@ -33,28 +33,21 @@ namespace GeoPagos.Authorization.Domain.Services
 
 
             var verify = await VerifyAmountPayment(model);
-            if (verify.Response == "Approved")
-            {
-                switch (model.TransactionType)
-                {
-                    case "Cobro":
-                        result = await TransactionTypeCobro(model);
-                        break;
-                    case "Devolucion":
-                        result = await TransactionTypeDevolucion(model);
-                        break;
-                    case "Reversa":
-                        result = await TransactionTypeReversa(model);
-                        break;  
-                    default:
-                        result.Message = $"Invalid TransactionType: {model.TransactionType}";
-                        break;
-                }
 
-            }
-            else
+            switch (model.TransactionType)
             {
-                result.Message = $"Payment rejected: {verify.Error}";
+                case "Cobro":
+                    result = await TransactionTypeCobro(model, verify.Response);
+                    break;
+                case "Devolucion":
+                    result = await TransactionTypeDevolucion(model, verify.Response);
+                    break;
+                case "Reversa":
+                    result = await TransactionTypeReversa(model, verify.Response);
+                    break;
+                default:
+                    result.Message = $"Invalid TransactionType: {model.TransactionType} - Solo se admite Cobro,Devolucion,Reversa para customerType:1";
+                    break;
             }
 
             return result;
@@ -108,18 +101,18 @@ namespace GeoPagos.Authorization.Domain.Services
             return data;
         }
 
-        public  async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model)
+        public  async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment approved";
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Approved",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
@@ -127,57 +120,117 @@ namespace GeoPagos.Authorization.Domain.Services
             };
 
             //Guardar auth en base de datos
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            if (exist != null)
+            {
+                result.Message = "Payment rejected: TransactionId already exists";
+                return result;
+            }   
             await _authorizationRequestRepository.Save(authorizationRequest);
 
-            //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+            if (statusProcessPayment == "Approved") 
+            {
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+                var approved = new AuthorizationRequestApproved()
+                {
+                    Id = Guid.Empty,
+                    Amount = authorizationRequest.Amount,
+                    TransactionDate = authorizationRequest.TransactionDate,
+                    CustomerName = authorizationRequest.CustomerName,
+                    TransactionId = authorizationRequest.TransactionId,
+                };
+                await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+            }
 
             return result;
         }
 
-        public async Task<AuthorizationRequestResponseDto> TransactionTypeDevolucion(AuthorizationRequestDto model)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeDevolucion(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment approved";
+            result.Message = $"Payment {statusProcessPayment}";
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Approved",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
                 TransactionType = model.TransactionType
             };
 
+
             //Guardar auth en base de datos
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            if (exist != null)
+            {
+                result.Message = "Payment rejected: TransactionId already exists";
+                return result;
+            }
             await _authorizationRequestRepository.Save(authorizationRequest);
+
+            if (statusProcessPayment == "Approved")
+            {
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+                var approved = new AuthorizationRequestApproved()
+                {
+                    Id = Guid.Empty,
+                    Amount = authorizationRequest.Amount,
+                    TransactionDate = authorizationRequest.TransactionDate,
+                    CustomerName = authorizationRequest.CustomerName,
+                    TransactionId = authorizationRequest.TransactionId,
+                };
+                await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+            }
 
             return result;
         }
 
-        public  async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model)
+        public  async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
-            result.Message = "Payment approved";
+            result.Message = $"Payment {statusProcessPayment}"; ;
             var authorizationRequest = new AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
                 TransactionDate = model.TransactionDate,
                 Amount = model.Amount,
-                Status = "Approved",
+                Status = statusProcessPayment,
                 CustomerName = model.CustomerName,
                 CustomerType = model.CustomerType,
                 CreatedAt = DateTime.Now,
                 TransactionType = model.TransactionType
             };
 
+           
             //Guardar auth en base de datos
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            if (exist != null)
+            {
+                result.Message = "Payment rejected: TransactionId already exists";
+                return result;
+            }
             await _authorizationRequestRepository.Save(authorizationRequest);
+
+            if (statusProcessPayment == "Approved")
+            {
+                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+                var approved = new AuthorizationRequestApproved()
+                {
+                    Id = Guid.Empty,
+                    Amount = authorizationRequest.Amount,
+                    TransactionDate = authorizationRequest.TransactionDate,
+                    CustomerName = authorizationRequest.CustomerName,
+                    TransactionId = authorizationRequest.TransactionId,
+                };
+                await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+            }
 
             return result;
         }
