@@ -1,5 +1,6 @@
 ﻿using GeoPagos.Authorization.Domain.Entities;
 using GeoPagos.Authorization.Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,13 @@ namespace GeoPagos.Authorization.Infraestructure.Repositories
                 _context.AuthorizationRequest.Update(entity);
             }
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<AuthorizationRequest> GetOne(string transactionId)
+        {
+            //var _context = _serviceProvider.GetService<ApplicationDbContext>();
+            var entity = await _context.AuthorizationRequest.Where(a=>a.TransactionId== transactionId).AsNoTracking().FirstOrDefaultAsync();
+            return entity;  
         }
     }
 }

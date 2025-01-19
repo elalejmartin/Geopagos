@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace GeoPagos.Authorization.Domain.Services
 {
-    public class AuthorizationRequestPrimeroService : IAuthorizationRequestService
+    public class AuthorizationRequestPrimeroService : AuthorizacionRequestBase, IAuthorizationRequestService
     {
         private readonly IAuthorizationRequestRepository _authorizationRequestRepository;
         private readonly ILogger<AuthorizationRequestPrimeroService> _logger;
         private readonly HttpClient _client;
 
         public AuthorizationRequestPrimeroService(IAuthorizationRequestRepository authorizationRequestRepository
-            , ILogger<AuthorizationRequestPrimeroService> logger)
+            , ILogger<AuthorizationRequestPrimeroService> logger) : base(authorizationRequestRepository)    
         {
             _authorizationRequestRepository = authorizationRequestRepository;
             _logger = logger;   
@@ -35,24 +35,22 @@ namespace GeoPagos.Authorization.Domain.Services
             var verify = await VerifyAmountPayment(model);
             if (verify.Response == "Approved")
             {
-                result.Message = "Payment approved";
-                var authorizationRequest = new AuthorizationRequest
+                switch (model.TransactionType)
                 {
-                    Id = Guid.Empty,
-                    TransactionId = model.TransactionId,
-                    TransactionDate = model.TransactionDate,
-                    Amount = model.Amount,
-                    Status = "Approved",
-                    CustomerName = model.CustomerName,
-                    CustomerType = model.CustomerType,
-                    CreatedAt = DateTime.Now,
-                    TransactionType = model.TransactionType
-                };
+                    case "Cobro":
+                        result = await TransactionTypeCobro(model);
+                        break;
+                    case "Devolucion":
+                        result = await TransactionTypeDevolucion(model);
+                        break;
+                    case "Reversa":
+                        result = await TransactionTypeReversa(model);
+                        break;  
+                    default:
+                        result.Message = $"Invalid TransactionType: {model.TransactionType}";
+                        break;
+                }
 
-                //Guardar en la base de datos
-                //
-
-                //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
             }
             else
             {
@@ -62,15 +60,15 @@ namespace GeoPagos.Authorization.Domain.Services
             return result;
         }
 
-        private async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
+        public virtual async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
         {
             //var discovery = await GetServiceAddress("Payment-Processor-Service");
             // Crea el objeto JSON que deseas enviar en el cuerpo de la solicitud
-            var data  = new PaymentDto()
+            var data = new PaymentDto()
             {
                 Amount = model.Amount,
                 CustomerName = model.CustomerName,
-                TransactionId = model.TransactionId                
+                TransactionId = model.TransactionId
             };
 
             try
@@ -110,18 +108,78 @@ namespace GeoPagos.Authorization.Domain.Services
             return data;
         }
 
-        private async Task<string?> GetServiceAddress(string serviceName)
+        public  async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model)
         {
-            var response = await _client.GetAsync($"http://services-consul:8500/v1/catalog/service/{serviceName}");
+            var result = new AuthorizationRequestResponseDto();
 
-            if (response.IsSuccessStatusCode)
+            result.Message = "Payment approved";
+            var authorizationRequest = new AuthorizationRequest
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var services = JsonSerializer.Deserialize<List<ConsulServiceDto>>(json);
-                return $"{services?.FirstOrDefault()?.ServiceAddress}:{services?.FirstOrDefault()?.ServicePort}";
-            }
+                Id = Guid.Empty,
+                TransactionId = model.TransactionId,
+                TransactionDate = model.TransactionDate,
+                Amount = model.Amount,
+                Status = "Approved",
+                CustomerName = model.CustomerName,
+                CustomerType = model.CustomerType,
+                CreatedAt = DateTime.Now,
+                TransactionType = model.TransactionType
+            };
 
-            return null;
+            //Guardar auth en base de datos
+            await _authorizationRequestRepository.Save(authorizationRequest);
+
+            //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
+
+            return result;
+        }
+
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeDevolucion(AuthorizationRequestDto model)
+        {
+            var result = new AuthorizationRequestResponseDto();
+
+            result.Message = "Payment approved";
+            var authorizationRequest = new AuthorizationRequest
+            {
+                Id = Guid.Empty,
+                TransactionId = model.TransactionId,
+                TransactionDate = model.TransactionDate,
+                Amount = model.Amount,
+                Status = "Approved",
+                CustomerName = model.CustomerName,
+                CustomerType = model.CustomerType,
+                CreatedAt = DateTime.Now,
+                TransactionType = model.TransactionType
+            };
+
+            //Guardar auth en base de datos
+            await _authorizationRequestRepository.Save(authorizationRequest);
+
+            return result;
+        }
+
+        public  async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model)
+        {
+            var result = new AuthorizationRequestResponseDto();
+
+            result.Message = "Payment approved";
+            var authorizationRequest = new AuthorizationRequest
+            {
+                Id = Guid.Empty,
+                TransactionId = model.TransactionId,
+                TransactionDate = model.TransactionDate,
+                Amount = model.Amount,
+                Status = "Approved",
+                CustomerName = model.CustomerName,
+                CustomerType = model.CustomerType,
+                CreatedAt = DateTime.Now,
+                TransactionType = model.TransactionType
+            };
+
+            //Guardar auth en base de datos
+            await _authorizationRequestRepository.Save(authorizationRequest);
+
+            return result;
         }
 
     }

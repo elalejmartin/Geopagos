@@ -32,15 +32,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 
-//builder.Services.AddSingleton<Func<IServiceProvider, ApplicationDbContext>>(sp =>
-//{
-//    return (serviceProvider) =>
-//    {
-//        var scope = serviceProvider.CreateScope();  // Crear un nuevo scope
-//        return scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    };
-//});
-
 builder.Services.AddScoped<IAuthorizationRequestFactory, AuthorizationRequestFactory>();
 builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestPrimeroService>();
 builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestSegundoService>();
@@ -91,21 +82,20 @@ if (app.Environment.IsDevelopment())
 }
 
 // Aplicar las migraciones al iniciar la aplicación
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        // Aplica las migraciones
+        //System.Threading.Thread.Sleep(10000);
+        dbContext.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    try
-//    {
-//        // Aplica las migraciones
-//        System.Threading.Thread.Sleep(10000);
-//        dbContext.Database.Migrate();
-//    }
-//    catch (Exception ex)
-//    {
-
-//    }
-//}
+    }
+}
 
 app.UseHttpsRedirection();
 

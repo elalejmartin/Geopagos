@@ -10,5 +10,6 @@ namespace GeoPagos.Authorization.Domain.IRepositories
     public interface IAuthorizationRequestRepository
     {
         Task Save(AuthorizationRequest entity);
+        Task<AuthorizationRequest> GetOne(string transactionId);
     }
 }
