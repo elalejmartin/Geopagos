@@ -1,0 +1,11 @@
+{
+  "version": "2.0",
+  "extensions": {
+    "timers": {
+      "maxRetryCount": 3, // Retries en caso de fallo
+      "scheduleMonitor": {
+        "interval": "00:01:00" // Monitoreo de programación (opcional)
+      }
+    }
+  }
+}

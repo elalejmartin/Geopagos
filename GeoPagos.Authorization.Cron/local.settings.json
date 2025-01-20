@@ -1,8 +1,10 @@
 {
     "IsEncrypted": false,
-    "Values": {
-        "AzureWebJobsStorage": "",
-        "FUNCTIONS_INPROC_NET8_ENABLED": "1",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet"
-    }
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "UrlAppService": "http://services-authorization/",
+    "SQLConnectionString": "Server=sqlserver,1433;Database=AuthorizationDb;User Id=sa;Password=MyP@ssw0rd2025;Integrated Security=False;MultipleActiveResultSets=true;Encrypt=False;TrustServerCertificate=True",
+    "FUNCTIONS_INPROC_NET8_ENABLED": "1",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  }
 }

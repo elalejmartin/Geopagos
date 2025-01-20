@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "GeoPagos.Authorization.Cron": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7237"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 33620,
+      "useSSL": false
+    }
+  }
+}

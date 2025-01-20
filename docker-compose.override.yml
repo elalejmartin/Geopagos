@@ -10,3 +10,6 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+  geopagos.authorization.cron:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

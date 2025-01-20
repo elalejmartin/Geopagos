@@ -6,7 +6,8 @@
       "serviceActions": {
         "geopagos.gateway.app": "StartDebugging",
         "geopagos.authorization.api": "StartDebugging",
-        "geopagos.paymentprocessor.api": "StartDebugging"
+        "geopagos.paymentprocessor.api": "StartDebugging",
+        "geopagos.authorization.cron": "StartDebugging"
       }
     }
   }

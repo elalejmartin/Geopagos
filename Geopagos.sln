@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución",
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPagos.Authorization.Cron", "GeoPagos.Authorization.Cron\GeoPagos.Authorization.Cron.csproj", "{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F28B4C93-1305-4236-9D4D-62C90BFC5CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,5 +101,6 @@ Global
 		{F99E0012-4DCD-45B4-8A5D-4B65D957CD63} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
 		{232B126E-DAD1-4254-9023-DD3A9D7D09E0} = {71BC716B-713F-43A8-9DB8-4919E9E6E402}
 		{922820B7-B4DE-4AC0-8B4C-AE23E41ABABD} = {B47B5ED2-889A-4095-AAE0-82DE1CBA2D83}
+		{4D6CCB0F-E61A-45F4-BF4F-47FB2824B3C2} = {868EC4CF-068B-4178-9C6B-0C5582878CAD}
 	EndGlobalSection
 EndGlobal

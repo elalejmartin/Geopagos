@@ -32,6 +32,21 @@ services:
     networks:
       - geopagos-network
 
+  geopagos.authorization.cron:
+    image: ${DOCKER_REGISTRY-}geopagosauthorizationcron
+    container_name: services-authorization-cron
+    hostname: services-authorization-cron
+    ports:
+      - "8004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    build:
+      context: .
+      dockerfile: GeoPagos.Authorization.Cron/Dockerfile
+    networks:
+      - geopagos-network
+
 
   geopagos.paymentprocessor.api:
     image: ${DOCKER_REGISTRY-}geopagospaymentprocessorapi
@@ -118,6 +133,8 @@ services:
     networks:
       - geopagos-network 
     restart: always 
+
+
 
 
 
