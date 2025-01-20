@@ -1,32 +1,39 @@
 ﻿{
-  "ReRoutes": [
-    {
-      "ServiceName": "authorization-service",
-      "UpstreamPathTemplate": "/authorization/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamHost": "localhost",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPort": "services-authorization:80", // Cambiar al nombre del contenedor y puerto
-      "DownstreamHost": "services-authorization", // Aquí se debe usar el nombre del contenedor en la red Docker
-      "DownstreamPort": 80 // Cambia al puerto adecuado si tu contenedor expone otro puerto
-    },
-    {
-      "ServiceName": "payment-processor-service",
-      "UpstreamPathTemplate": "/payment-processor/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamHost": "localhost",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPort": "payment-processor-service:80",
-      "DownstreamHost": "payment-processor-service",
-      "DownstreamPort": 80
-    }
-  ],
   "GlobalConfiguration": {
+    //"BaseUrl": "http://localhost:8001/",
     "UseServiceDiscovery": true,
     "ServiceDiscoveryProvider": {
+      "Scheme": "http",
       "Host": "services-consul",
       "Port": 8500,
       "Type": "Consul"
     }
-  }
+  },
+  "ReRoutes": [
+    {    
+      "DownstreamPathTemplate": "/{service}/{everything}",
+      "UpstreamPathTemplate": "/{service}/{everything}",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      }
+    }
+    //{
+    //  "UseServiceDiscovery": true,
+    //  "DownstreamPathTemplate": "/{url}",
+    //  "UpstreamPathTemplate": "/{everything}",
+    //  "ServiceName": "Authorization-Service",
+    //  "LoadBalancerOptions": {
+    //    "Type": "LeastConnection"
+    //  }
+    //}
+    //{
+    //  "DownstreamPathTemplate": "/Authorization-Service/{everything}",
+    //  "UpstreamPathTemplate": "/Authorization-Service/{everything}",
+    //  "ServiceName": "Authorization-Service", // Nombre del servicio registrado
+    //  "LoadBalancerOptions": {
+    //    "Type": "LeastConnection"
+    //  }
+    //}
+  ]
+
 }

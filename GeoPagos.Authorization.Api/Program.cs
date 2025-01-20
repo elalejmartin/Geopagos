@@ -62,8 +62,8 @@ var registration = new AgentServiceRegistration
 {
     ID = "authorization-service-1",  // ID único para esta instancia del servicio
     Name = "Authorization-Service",  // Nombre del servicio
-    Address = "localhost",    // Dirección del servicio
-    Port = 50162               // Puerto donde corre el servicio
+    Address = "services-authorization",    // Dirección del servicio
+    Port = 8002               // Puerto donde corre el servicio
 };
 
 // Registrar el servicio en Consul
@@ -102,9 +102,9 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

@@ -26,8 +26,8 @@ var registration = new AgentServiceRegistration
 {
     ID = "payment-processor-service-1",  // ID único para esta instancia del servicio
     Name = "Payment-Processor-Service",  // Nombre del servicio
-    Address = "localhost",    // Dirección del servicio
-    Port = 44376               // Puerto donde corre el servicio
+    Address = "services-payment-processor ",    // Dirección del servicio
+    Port = 8003               // Puerto donde corre el servicio
 };
 
 // Registrar el servicio en Consul
