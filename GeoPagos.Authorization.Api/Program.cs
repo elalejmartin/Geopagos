@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Serilog.Sinks.Elasticsearch;
 using Serilog;
 using GeoPagos.Authorization.Application.Interfaces;
-using GeoPagos.Authorization.Domain.Services;
 using GeoPagos.Authorization.Domain.IRepositories;
 using GeoPagos.Authorization.Infraestructure.Repositories;
 using GeoPagos.Authorization.Api.IntegrationEvents;
+using GeoPagos.Authorization.Domain.Services.AuthorizationRequest;
+using GeoPagos.Authorization.Domain.Services.AuthorizationRequestApproved;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IAuthorizationRequestFactory, AuthorizationRequestFactory>();
 builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestPrimeroService>();
 builder.Services.AddScoped<IAuthorizationRequestService, AuthorizationRequestSegundoService>();
+builder.Services.AddSingleton<IAuthorizationRequestApprovedService, AuthorizationRequesApprovedService>();
+builder.Services.AddSingleton<IAuthorizationRequestApprovedRepository, AuthorizationRequestApprovedRepository>();
 builder.Services.AddScoped<IAuthorizationRequestRepository, AuthorizationRequestRepository>();
 builder.Services.AddScoped<AuthorizationRequestPrimeroService>();
 builder.Services.AddScoped<AuthorizationRequestSegundoService>();

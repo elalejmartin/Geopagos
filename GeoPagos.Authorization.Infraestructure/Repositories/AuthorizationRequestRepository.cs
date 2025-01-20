@@ -39,11 +39,19 @@ namespace GeoPagos.Authorization.Infraestructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+
+
         public async Task<AuthorizationRequest> GetOne(string transactionId)
         {
             //var _context = _serviceProvider.GetService<ApplicationDbContext>();
             var entity = await _context.AuthorizationRequest.Where(a=>a.TransactionId== transactionId).AsNoTracking().FirstOrDefaultAsync();
             return entity;  
+        }
+
+        public async Task<AuthorizationRequest> GetOneByStatus(string transactionId, string status) 
+        {
+            var entity = await _context.AuthorizationRequest.Where(a => a.TransactionId == transactionId && a.Status== status).AsNoTracking().FirstOrDefaultAsync();
+            return entity;
         }
     }
 }

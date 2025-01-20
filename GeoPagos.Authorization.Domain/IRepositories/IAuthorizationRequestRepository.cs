@@ -11,5 +11,6 @@ namespace GeoPagos.Authorization.Domain.IRepositories
     {
         Task Save(AuthorizationRequest entity);
         Task<AuthorizationRequest> GetOne(string transactionId);
+        Task<AuthorizationRequest> GetOneByStatus(string transactionId,string status);
     }
 }

@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 
 
-namespace GeoPagos.Authorization.Domain.Services
+namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
 {
-    public  class AuthorizationRequestFactory : IAuthorizationRequestFactory
+    public class AuthorizationRequestFactory : IAuthorizationRequestFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -17,7 +17,7 @@ namespace GeoPagos.Authorization.Domain.Services
             _serviceProvider = serviceProvider;
         }
 
-        public  IAuthorizationRequestService GetAuthorizationRequest(string tipo)
+        public IAuthorizationRequestService GetAuthorizationRequest(string tipo)
         {
             //using (var scope = _serviceProvider.CreateScope())
             //{

@@ -14,6 +14,7 @@ namespace GeoPagos.Authorization.Infraestructure
         }
 
         public virtual DbSet<AuthorizationRequest> AuthorizationRequest { get; set; }
+        public virtual DbSet<AuthorizationRequestApproved> AuthorizationRequestApproved { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

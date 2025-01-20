@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GeoPagos.Authorization.Domain.Services
+namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
 {
     public class AuthorizationRequestPrimeroService : AuthorizacionRequestBase, IAuthorizationRequestService
     {
@@ -30,9 +30,10 @@ namespace GeoPagos.Authorization.Domain.Services
         public async Task<AuthorizationRequestResponseDto> Authorize(AuthorizationRequestDto model)
         {
             var result = new AuthorizationRequestResponseDto();
-
+            _logger.LogInformation($"Started Authorization");
 
             var verify = await VerifyAmountPayment(model);
+            _logger.LogInformation($"VerifyAmountPayment: {verify.Response}");
 
             switch (model.TransactionType)
             {
@@ -49,64 +50,18 @@ namespace GeoPagos.Authorization.Domain.Services
                     result.Message = $"Invalid TransactionType: {model.TransactionType} - Solo se admite Cobro,Devolucion,Reversa para customerType:1";
                     break;
             }
+            _logger.LogInformation($"End Authorization");
 
             return result;
         }
+ 
 
-        public virtual async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
-        {
-            //var discovery = await GetServiceAddress("Payment-Processor-Service");
-            // Crea el objeto JSON que deseas enviar en el cuerpo de la solicitud
-            var data = new PaymentDto()
-            {
-                Amount = model.Amount,
-                CustomerName = model.CustomerName,
-                TransactionId = model.TransactionId
-            };
-
-            try
-            {
-                // URL del servicio al que quieres hacer la solicitud POST
-                string url = $"http://services-payment-processor/api/payments/";  // Cambia por tu URL real
-
-
-                string jsonContent = JsonSerializer.Serialize(data, new JsonSerializerOptions
-                {
-                    WriteIndented = true // Formato con sangría para mayor legibilidad
-                });
-
-
-                // Crea el contenido HTTP (cuerpo de la solicitud)
-                StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-                // Realiza la solicitud POST
-                HttpResponseMessage response = await _client.PostAsync(url, content);
-
-                // Si la respuesta es exitosa, lee el contenido
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    data.Response = responseContent;
-                }
-                else
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    data.Error = responseContent;
-                }
-            }
-            catch (Exception ex)
-            {
-                data.Error = ex.Message;
-            }
-            return data;
-        }
-
-        public  async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model, string statusProcessPayment)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
             result.Message = $"Payment {statusProcessPayment}";
-            var authorizationRequest = new AuthorizationRequest
+            var authorizationRequestEntity = new GeoPagos.Authorization.Domain.Entities.AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
@@ -120,26 +75,26 @@ namespace GeoPagos.Authorization.Domain.Services
             };
 
             //Guardar auth en base de datos
-            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequestEntity.TransactionId);
             if (exist != null)
             {
                 result.Message = "Payment rejected: TransactionId already exists";
                 return result;
-            }   
-            await _authorizationRequestRepository.Save(authorizationRequest);
+            }
+            await _authorizationRequestRepository.Save(authorizationRequestEntity);
 
-            if (statusProcessPayment == "Approved") 
+            if (statusProcessPayment == "Approved")
             {
                 //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
-                var approved = new AuthorizationRequestApproved()
-                {
-                    Id = Guid.Empty,
-                    Amount = authorizationRequest.Amount,
-                    TransactionDate = authorizationRequest.TransactionDate,
-                    CustomerName = authorizationRequest.CustomerName,
-                    TransactionId = authorizationRequest.TransactionId,
+                var approved = new Application.DTOs.AuthorizationRequestApprovedDto()
+                {                   
+                    Amount = authorizationRequestEntity.Amount,
+                    TransactionDate = authorizationRequestEntity.TransactionDate,
+                    CustomerName = authorizationRequestEntity.CustomerName,
+                    TransactionId = authorizationRequestEntity.TransactionId,
                 };
                 await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+                _logger.LogInformation($"Mensaje enviado a la cola: {JsonSerializer.Serialize(approved)}");
             }
 
             return result;
@@ -150,7 +105,7 @@ namespace GeoPagos.Authorization.Domain.Services
             var result = new AuthorizationRequestResponseDto();
 
             result.Message = $"Payment {statusProcessPayment}";
-            var authorizationRequest = new AuthorizationRequest
+            var authorizationRequestEntity = new GeoPagos.Authorization.Domain.Entities.AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
@@ -165,37 +120,37 @@ namespace GeoPagos.Authorization.Domain.Services
 
 
             //Guardar auth en base de datos
-            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequestEntity.TransactionId);
             if (exist != null)
             {
                 result.Message = "Payment rejected: TransactionId already exists";
                 return result;
             }
-            await _authorizationRequestRepository.Save(authorizationRequest);
+            await _authorizationRequestRepository.Save(authorizationRequestEntity);
 
             if (statusProcessPayment == "Approved")
             {
                 //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
-                var approved = new AuthorizationRequestApproved()
-                {
-                    Id = Guid.Empty,
-                    Amount = authorizationRequest.Amount,
-                    TransactionDate = authorizationRequest.TransactionDate,
-                    CustomerName = authorizationRequest.CustomerName,
-                    TransactionId = authorizationRequest.TransactionId,
+                var approved = new Application.DTOs.AuthorizationRequestApprovedDto()
+                {                 
+                    Amount = authorizationRequestEntity.Amount,
+                    TransactionDate = authorizationRequestEntity.TransactionDate,
+                    CustomerName = authorizationRequestEntity.CustomerName,
+                    TransactionId = authorizationRequestEntity.TransactionId,
                 };
                 await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+                _logger.LogInformation($"Mensaje enviado a la cola: {JsonSerializer.Serialize(approved)}");
             }
 
             return result;
         }
 
-        public  async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model, string statusProcessPayment)
+        public async Task<AuthorizationRequestResponseDto> TransactionTypeReversa(AuthorizationRequestDto model, string statusProcessPayment)
         {
             var result = new AuthorizationRequestResponseDto();
 
             result.Message = $"Payment {statusProcessPayment}"; ;
-            var authorizationRequest = new AuthorizationRequest
+            var authorizationRequestEntity = new GeoPagos.Authorization.Domain.Entities.AuthorizationRequest
             {
                 Id = Guid.Empty,
                 TransactionId = model.TransactionId,
@@ -208,28 +163,28 @@ namespace GeoPagos.Authorization.Domain.Services
                 TransactionType = model.TransactionType
             };
 
-           
+
             //Guardar auth en base de datos
-            var exist = await _authorizationRequestRepository.GetOne(authorizationRequest.TransactionId);
+            var exist = await _authorizationRequestRepository.GetOne(authorizationRequestEntity.TransactionId);
             if (exist != null)
             {
                 result.Message = "Payment rejected: TransactionId already exists";
                 return result;
             }
-            await _authorizationRequestRepository.Save(authorizationRequest);
+            await _authorizationRequestRepository.Save(authorizationRequestEntity);
 
             if (statusProcessPayment == "Approved")
             {
                 //Enviar a la cola de mensajes  rabbitmq solo para transacciones confirmadas
-                var approved = new AuthorizationRequestApproved()
-                {
-                    Id = Guid.Empty,
-                    Amount = authorizationRequest.Amount,
-                    TransactionDate = authorizationRequest.TransactionDate,
-                    CustomerName = authorizationRequest.CustomerName,
-                    TransactionId = authorizationRequest.TransactionId,
+                var approved = new Application.DTOs.AuthorizationRequestApprovedDto()
+                {                 
+                    Amount = authorizationRequestEntity.Amount,
+                    TransactionDate = authorizationRequestEntity.TransactionDate,
+                    CustomerName = authorizationRequestEntity.CustomerName,
+                    TransactionId = authorizationRequestEntity.TransactionId,
                 };
                 await SendMessage("authorization-request", JsonSerializer.Serialize(approved));
+                _logger.LogInformation($"Mensaje enviado a la cola: {JsonSerializer.Serialize(approved)}");
             }
 
             return result;

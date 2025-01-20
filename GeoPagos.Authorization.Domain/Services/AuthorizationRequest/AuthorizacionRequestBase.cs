@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GeoPagos.Authorization.Domain.Services
+namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
 {
     public abstract class AuthorizacionRequestBase
     {
@@ -21,11 +21,12 @@ namespace GeoPagos.Authorization.Domain.Services
         {
             _client = new HttpClient();
             _factory = new ConnectionFactory()
-                                    { HostName = "services-rabbitmq",
-                                        UserName= "user",
-                                        Password = "password"
-                                    };
-             _authorizationRequestRepository = authorizationRequestRepository;
+            {
+                HostName = "services-rabbitmq",
+                UserName = "user",
+                Password = "password"
+            };
+            _authorizationRequestRepository = authorizationRequestRepository;
         }
 
         public virtual async Task<PaymentDto> VerifyAmountPayment(AuthorizationRequestDto model)
@@ -80,13 +81,13 @@ namespace GeoPagos.Authorization.Domain.Services
         {
             using var connection = await _factory.CreateConnectionAsync();
             IChannel channel = await connection.CreateChannelAsync();
-            await channel.QueueDeclareAsync(queueName, durable:false, exclusive:false,autoDelete:false, arguments: null);
+            await channel.QueueDeclareAsync(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-            byte[] messageBodyBytes = System.Text.Encoding.UTF8.GetBytes(message);
+            byte[] messageBodyBytes = Encoding.UTF8.GetBytes(message);
             var props = new BasicProperties();
             props.ContentType = "text/plain";
-            props.DeliveryMode =DeliveryModes.Transient;
-            await channel.BasicPublishAsync(exchange:"", routingKey: queueName, mandatory: false, basicProperties: props, body: messageBodyBytes);
+            props.DeliveryMode = DeliveryModes.Transient;
+            await channel.BasicPublishAsync(exchange: "", routingKey: queueName, mandatory: false, basicProperties: props, body: messageBodyBytes);
 
 
             //Exchanges: Son los puntos de entrada para los mensajes en RabbitMQ. Los mensajes se enrutan a las colas basadas en las reglas de enrutamiento.
