@@ -39,6 +39,14 @@ El proyecto consta de **tres microservicios** principales:
 
 Puedes probar el sistema utilizando **Postman** o directamente en **Swagger**.
 
+**CustomerType:**
+-Tipo 1: Recibe transaccion y verifica si la aprueba o no
+-Tipo 2: Recibe transaccion y luego su confirmacion
+
+**TransactionType:**
+-Para tipo 1 admite Cobro,Devolucion,Reversa 
+-Para tipo 2 admite Cobro,Devolucion,Reversa,Confirmacion 
+
 ### **Swagger**
 - Accede a la documentación interactiva:
   [http://localhost:8002/swagger/index.html](http://localhost:8002/swagger/index.html)
