@@ -47,11 +47,12 @@ namespace GeoPagos.Authorization.Cron
                 //var sqlQuery = @"
                 //            SELECT *
                 //            FROM AuthorizationRequest
-                //            WHERE TransactionDate >= DATEADD(MINUTE, -5, GETDATE());";
+                //            WHERE TransactionDate >= DATEADD(MINUTE, -5, GETDATE()) AND TransactionType='2';";
 
-                var sqlQuery = @"
+               var sqlQuery = @"
                             SELECT *
-                            FROM AuthorizationRequest";
+                            FROM AuthorizationRequest
+                            WHERE TransactionType='2'";
 
                 var authorizations = await connection.QueryAsync<AuthorizationRequestDto>(sqlQuery);
 
