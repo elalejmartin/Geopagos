@@ -1,42 +1,59 @@
-INSTALACION
-Se necesita docker para levantar los microservicios
-La base de datos se crea solo a travez de una migracion al levantar los microservicios
+# 🚀 **Guía de Instalación y Uso**
 
-ARQUITECTURA
+## 📦 **INSTALACIÓN**
+1. Asegúrate de tener **Docker** instalado para levantar los microservicios.
+2. La base de datos se crea automáticamente al ejecutar una migración durante el arranque de los microservicios.
 
-![image](https://github.com/user-attachments/assets/f600d03b-b241-4946-bf42-9beaa8ee857f)
+---
 
+## 🏛️ **ARQUITECTURA**
 
+![Arquitectura del Proyecto](https://github.com/user-attachments/assets/f600d03b-b241-4946-bf42-9beaa8ee857f)
 
+### Descripción
+El proyecto consta de **tres microservicios** principales:
+1. **services-authorization**: 
+   - Gestor de almacenamiento y transacciones.
+2. **services-payment-procesor**: 
+   - Valida si una transacción está aprobada.
+3. **services-authorization-cron**: 
+   - Cron job que se ejecuta cada minuto para validar transacciones del tipo 2 que superen los 5 minutos de espera.
 
+### Tecnologías Utilizadas
+- **Base de datos**: 
+  - Por simplicidad, se usó una única base de datos para almacenar toda la información.
+- **Arquitectura limpia**: 
+  - Implementada en el microservicio `services-authorization`. Los otros dos microservicios tienen una implementación más sencilla por razones de tiempo.
+- **RabbitMQ**: 
+  - Cola de mensajería.
+- **Ocelot**: 
+  - API Gateway.
+- **Consul**: 
+  - Discovery de microservicios.
+- **SQL Server**: 
+  - Base de datos principal.
 
-ARQUITECTURA
-El proyecto cuenta con tres Microservicios
-1. services-authorization: Este microservicio de almacenar y gestionar transacciones.
-2. services-payment-procesor: Este microservicio se encarga de validar si una transaccion esta aprobada
-3. services-authorization-cron: Este microservicio es un cron que se ejecuta cada un minuto para validar si hay transacciones del tipo 2 que pasaron los 5 minutos de espera
+---
 
-Por cuestiones de tiempo se uso solo una base de datos para guardar toda la informacion.
-Se utilizo arquitectura limpia para el desarrollo del microservicio services-authorization, los otros dos microservicios se simplifico el desarrollo por cuestiones de tiempo.
+## 🔧 **USO**
 
-Se utilizo Rabbitmq como cola de mensajeria
-Se utilizo ocelot como api gateway
-Se utilizo consul como discovery de los microservicios
-Se utilizo sql server como base de datos principal.
+Puedes probar el sistema utilizando **Postman** o directamente en **Swagger**.
 
-USO
-Probar con postman o directamente entrando a swagger
-SWAGGER: http://localhost:8002/swagger/index.html
+### **Swagger**
+- Accede a la documentación interactiva:
+  [http://localhost:8002/swagger/index.html](http://localhost:8002/swagger/index.html)
 
-POSTMAN: 
-URL:http://localhost:8002/api/authorizationRequests/
-METHOD: POST
-BODY: Este es un ejemplo 
+### **Postman**
+#### Endpoint: 
+```http
+POST http://localhost:8002/api/authorizationRequests/
+
 {
-  "transactionId": "65456456", //Para el customertype 1 son unicos, para el 2 se repite con la confirmacion
+  "transactionId": "65456456", 
   "transactionDate": "2025-01-19T21:45:32.988Z",
   "amount": 100,
   "customerName": "Santander",
-  "customerType": "1", //1 Normal, 2 Con confirmacion
-  "transactionType": "Cobro" // Solo se admite Cobro,Devolucion,Reversa,Confirmacion para customerType:2, para customerType:1 Cobro,Devolucion,Reversa
+  "customerType": "1", 
+  "transactionType": "Cobro"
 }
+
