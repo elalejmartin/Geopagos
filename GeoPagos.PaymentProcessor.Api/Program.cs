@@ -32,8 +32,7 @@ var registration = new AgentServiceRegistration
 
 // Registrar el servicio en Consul
 await consulClient.Agent.ServiceRegister(registration);
-// Registrar el servicio en Consul
-//consulClient.Agent.ServiceRegister(registration).Wait();
+
 
 // Manejador para anular el registro cuando el servicio se apaga
 app.Lifetime.ApplicationStopping.Register(async () =>
@@ -48,9 +47,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

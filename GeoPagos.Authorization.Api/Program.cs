@@ -17,20 +17,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(connectionString));
 
-// Configuración de Serilog
-//Log.Logger = new LoggerConfiguration()
-//    .Enrich.FromLogContext()
-//    .WriteTo.Console()  // Si deseas también mostrar los logs en la consola
-//    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))  // Cambia la URL si tu servidor de Elasticsearch está en otro lugar
-//    {
-//        AutoRegisterTemplate = true,  // Esto permite que Serilog registre automáticamente el template del índice
-//        IndexFormat = "authorization-services-logs-{0:yyyy.MM.dd}"  // El formato de los índices, puedes ajustarlo según prefieras
-//    })
-//    .CreateLogger();
-
-////builder.Host.UseSerilog();
-//builder.Host.UseSerilog(Log.Logger);
-
 
 // Add services to the container.
 
@@ -68,8 +54,7 @@ var registration = new AgentServiceRegistration
 
 // Registrar el servicio en Consul
 await consulClient.Agent.ServiceRegister(registration);
-// Registrar el servicio en Consul
-//consulClient.Agent.ServiceRegister(registration).Wait();
+
 
 // Manejador para anular el registro cuando el servicio se apaga
 app.Lifetime.ApplicationStopping.Register(async () =>
