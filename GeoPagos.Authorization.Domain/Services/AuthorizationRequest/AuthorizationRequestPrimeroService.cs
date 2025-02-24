@@ -54,7 +54,7 @@ namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
 
             return result;
         }
- 
+
 
         public async Task<AuthorizationRequestResponseDto> TransactionTypeCobro(AuthorizationRequestDto model, string statusProcessPayment)
         {
@@ -188,6 +188,11 @@ namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
             }
 
             return result;
+        }
+
+        public override void Deposit(decimal amount)
+        {
+            throw new NotImplementedException();
         }
 
     }

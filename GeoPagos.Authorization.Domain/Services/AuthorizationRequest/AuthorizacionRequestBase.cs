@@ -100,5 +100,8 @@ namespace GeoPagos.Authorization.Domain.Services.AuthorizationRequest
 
         }
 
+        // Método abstracto para depositar dinero
+        public abstract void Deposit(decimal amount);
+
     }
 }

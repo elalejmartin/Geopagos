@@ -10,13 +10,13 @@
     }
   },
   "ReRoutes": [
-    {    
+    {
       "DownstreamPathTemplate": "/{service}/{everything}",
       "UpstreamPathTemplate": "/{service}/{everything}",
       "LoadBalancerOptions": {
-        "Type": "LeastConnection"
+        "Type": "RoundRobin"
       }
-    }
+    } 
     //{
     //  "UseServiceDiscovery": true,
     //  "DownstreamPathTemplate": "/{url}",

@@ -48,7 +48,7 @@ var registration = new AgentServiceRegistration
 {
     ID = "authorization-service-1",  // ID único para esta instancia del servicio
     Name = "Authorization-Service",  // Nombre del servicio
-    Address = "services-authorization",    // Dirección del servicio
+    Address = "server-1",    // Dirección del servicio
     Port = 8002               // Puerto donde corre el servicio
 };
 
